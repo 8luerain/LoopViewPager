@@ -92,10 +92,8 @@ public class LoopViewPager extends ViewPager {
             if (mListener == null) {
                 return;
             }
-            if (position != 0 && position != mWrapper.getCount() - 1) {
-                int originalPosition = mWrapper.toOriginalPosition(position);
-                mListener.onPageScrolled(originalPosition, positionOffset, positionOffsetPixels);
-            }
+            int originalPosition = mWrapper.toOriginalPosition(position);
+            mListener.onPageScrolled(originalPosition, positionOffset, positionOffsetPixels);
         }
 
         @Override
@@ -103,10 +101,8 @@ public class LoopViewPager extends ViewPager {
             if (mListener == null) {
                 return;
             }
-            if (position != 0 && position != mWrapper.getCount() - 1) {
-                int originalPosition = mWrapper.toOriginalPosition(position);
-                mListener.onPageSelected(originalPosition);
-            }
+            int originalPosition = mWrapper.toOriginalPosition(position);
+            mListener.onPageSelected(originalPosition);
         }
 
         @Override

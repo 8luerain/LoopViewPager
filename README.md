@@ -1,5 +1,5 @@
 # LoopViewPager
-Android无限循环ViewPager
+Android无限循环ViewPager（暂时不支持Fragment）
 
 ## Usage
 和普通的ViewPager一样使用
