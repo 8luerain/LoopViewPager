@@ -1,6 +1,9 @@
 package com.shenghaiyang.loopviewpager;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -12,6 +15,12 @@ public class LoopViewPager extends ViewPager {
 
     private LoopPagerWrapper mWrapper;
     private LoopOnPageChangeListener mListener;
+
+    private Thread mLoopThread;
+    private Handler mHandler;
+    private int time1;
+    private int time2;
+    private int i;
 
     public LoopViewPager(Context context) {
         super(context, null);
@@ -26,6 +35,44 @@ public class LoopViewPager extends ViewPager {
     private void init() {
         mListener = new LoopOnPageChangeListener();
         super.addOnPageChangeListener(mListener);
+        mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+
+            }
+        };
+        mLoopThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.currentThread().sleep(time1);
+                        Message msg = mHandler.obtainMessage();
+                        msg.what = i % mWrapper.getOriginalCount();
+                        mHandler.sendMessage(msg);
+                        i++;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    public void start() {
+        mLoopThread.start();
+    }
+
+    private void pause() {
+        if(mLoopThread.isAlive()){
+            throw new IllegalStateException("Loop thread has not start.");
+        }
+        try {
+            mLoopThread.sleep(time2);
+            i = getCurrentItem();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
