@@ -7,6 +7,7 @@ import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 
 /**
  * Created by Administrator on 2016/2/14.
@@ -18,8 +19,8 @@ public class LoopViewPager extends ViewPager {
 
     private Thread mLoopThread;
     private Handler mHandler;
-    private int time1;
-    private int time2;
+    private int mLoopTime;
+    private int mPauseTime;
     private int i;
 
     public LoopViewPager(Context context) {
@@ -38,15 +39,18 @@ public class LoopViewPager extends ViewPager {
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
-
+                setCurrentItem(msg.what);
             }
         };
+        mLoopTime = 2000;
+        mPauseTime = 3000;
+        i = 1;
         mLoopThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
                     try {
-                        Thread.currentThread().sleep(time1);
+                        Thread.currentThread().sleep(mLoopTime);
                         Message msg = mHandler.obtainMessage();
                         msg.what = i % mWrapper.getOriginalCount();
                         mHandler.sendMessage(msg);
@@ -59,20 +63,26 @@ public class LoopViewPager extends ViewPager {
         });
     }
 
+
     public void start() {
         mLoopThread.start();
     }
 
     private void pause() {
-        if(mLoopThread.isAlive()){
+        if (mLoopThread.isAlive()) {
             throw new IllegalStateException("Loop thread has not start.");
         }
         try {
-            mLoopThread.sleep(time2);
+            mLoopThread.sleep(mPauseTime);
             i = getCurrentItem();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        return super.onTouchEvent(ev);
     }
 
     @Override
@@ -168,5 +178,21 @@ public class LoopViewPager extends ViewPager {
                 }
             }
         }
+    }
+
+    public int getLoopTime() {
+        return mLoopTime;
+    }
+
+    public void setLoopTime(int loopTime) {
+        this.mLoopTime = loopTime;
+    }
+
+    public int getPauseTime() {
+        return mPauseTime;
+    }
+
+    public void setPauseTime(int pauseTime) {
+        this.mPauseTime = pauseTime;
     }
 }
