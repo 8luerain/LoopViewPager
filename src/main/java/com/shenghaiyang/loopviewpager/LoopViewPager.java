@@ -7,7 +7,6 @@ import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 
 /**
  * Created by Administrator on 2016/2/14.
@@ -21,7 +20,6 @@ public class LoopViewPager extends ViewPager {
     private Handler mHandler;
     private int mLoopTime;
     private int mPauseTime;
-    private int i;
 
     public LoopViewPager(Context context) {
         super(context, null);
@@ -39,28 +37,26 @@ public class LoopViewPager extends ViewPager {
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                setCurrentItem(msg.what);
+                setCurrentItem(msg.what, false);
             }
         };
-        mLoopTime = 2000;
+        mLoopTime = 3000;
         mPauseTime = 3000;
-        i = 1;
-        mLoopThread = new Thread(new Runnable() {
+        mLoopThread = new Thread() {
             @Override
             public void run() {
                 while (true) {
                     try {
                         Thread.currentThread().sleep(mLoopTime);
                         Message msg = mHandler.obtainMessage();
-                        msg.what = i % mWrapper.getOriginalCount();
+                        msg.what = (getCurrentItem() + 1) % mWrapper.getOriginalCount();
                         mHandler.sendMessage(msg);
-                        i++;
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }
-        });
+        };
     }
 
 
@@ -68,21 +64,12 @@ public class LoopViewPager extends ViewPager {
         mLoopThread.start();
     }
 
-    private void pause() {
-        if (mLoopThread.isAlive()) {
-            throw new IllegalStateException("Loop thread has not start.");
-        }
+    public void pause() {
         try {
             mLoopThread.sleep(mPauseTime);
-            i = getCurrentItem();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        return super.onTouchEvent(ev);
     }
 
     @Override
