@@ -6,9 +6,6 @@ import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * Created by Administrator on 2016/2/14.
- */
 class LoopPagerWrapper extends PagerAdapter {
 
     private PagerAdapter originalAdapter;

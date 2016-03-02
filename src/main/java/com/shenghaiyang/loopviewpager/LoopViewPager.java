@@ -8,9 +8,6 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 
-/**
- * Created by Administrator on 2016/2/14.
- */
 public class LoopViewPager extends ViewPager {
 
     private LoopPagerWrapper mWrapper;
@@ -20,6 +17,7 @@ public class LoopViewPager extends ViewPager {
     private Handler mHandler;
     private int mLoopTime;
     private int mPauseTime;
+    private boolean isStop;
 
     public LoopViewPager(Context context) {
         super(context, null);
@@ -37,7 +35,9 @@ public class LoopViewPager extends ViewPager {
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                setCurrentItem(msg.what, false);
+                if (!isStop) {
+                    setCurrentItem(msg.what, false);
+                }
             }
         };
         mLoopTime = 3000;
@@ -46,6 +46,9 @@ public class LoopViewPager extends ViewPager {
             @Override
             public void run() {
                 while (true) {
+                    if (isStop) {
+                        break;
+                    }
                     try {
                         Thread.currentThread().sleep(mLoopTime);
                         Message msg = mHandler.obtainMessage();
@@ -61,6 +64,7 @@ public class LoopViewPager extends ViewPager {
 
 
     public void start() {
+        isStop = false;
         mLoopThread.start();
     }
 
@@ -70,6 +74,10 @@ public class LoopViewPager extends ViewPager {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void stop() {
+        isStop = true;
     }
 
     @Override

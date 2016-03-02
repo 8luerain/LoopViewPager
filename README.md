@@ -2,7 +2,7 @@
 Android无限循环ViewPager（暂时不支持Fragment）
 
 ## Usage
-和普通的ViewPager一样使用
+和普通的ViewPager一样使用，调用start方法即可启动轮播，在需要停止的地方调用stop方法，例如activity生命周期的onStop();
 
 ## License
 
